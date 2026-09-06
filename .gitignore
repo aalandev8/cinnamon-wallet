@@ -1,0 +1,38 @@
+# Foundry compiler output
+cache/
+out/
+.foundry/
+
+# Broadcast logs (keep dry-run and local-chain noise out)
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Coverage
+lcov.info
+*.lcov
+coverage/
+
+# Gas snapshots diff noise (keep the committed .gas-snapshot itself)
+.gas-snapshot.tmp
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Local tooling / caches
+.atl/
+.logs/
+.ignore/
+node_modules/
+
+# graphify — regenerable code-graph output (rebuild with `graphify update .`)
+graphify-out/
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
