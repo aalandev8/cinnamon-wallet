@@ -76,8 +76,8 @@ Do not add `Co-Authored-By` or other AI-attribution trailers.
 - The PR description explains **why**, not just what.
 - Link the issue it closes (`Closes #NN`).
 
-[CodeRabbit](https://coderabbit.ai) reviews every PR automatically (config in
-[`.coderabbit.yaml`](.coderabbit.yaml)). Its comments are advisory; a human
+[CodeRabbit](https://coderabbit.ai) reviews PRs targeting `main` automatically (config in
+[`.coderabbit.yaml`](.coderabbit.yaml)). It skips drafts and PRs labeled `wip`. Its comments are advisory; a human
 CODEOWNER approval is still required to merge. Re-trigger it with
 `@coderabbitai review` in a PR comment.
 
