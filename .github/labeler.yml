@@ -1,0 +1,59 @@
+"area: ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"
+          - ".github/labeler.yml"
+          - ".github/dependabot.yml"
+
+"area: tooling":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "foundry.toml"
+          - "foundry.lock"
+          - "justfile"
+          - ".editorconfig"
+          - ".gitmodules"
+          - ".coderabbit.yaml"
+          - "lib/**"
+
+"area: core":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/core/**"
+          - "src/WalletCore*.sol"
+
+"area: module":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/modules/**"
+          - "src/validators/**"
+          - "src/hooks/**"
+
+"area: factory":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**Factory*.sol"
+          - "src/factory/**"
+
+"area: erc-4337":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**EntryPoint*.sol"
+          - "test/**harness/**"
+
+"type: test":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "test/**"
+
+"type: docs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "docs/**"
+
+"type: chore":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - ".gitignore"

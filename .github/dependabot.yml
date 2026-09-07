@@ -1,6 +1,5 @@
 version: 2
 updates:
-  # GitHub Actions used by workflows in .github/workflows.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -11,7 +10,6 @@ updates:
       - "type: chore"
       - "area: ci"
 
-  # Git submodules under lib/ (forge-std, and later OZ / account-abstraction).
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     schedule:
