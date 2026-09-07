@@ -1,0 +1,50 @@
+# CodeRabbit configuration — https://docs.coderabbit.ai/reference/yaml-template
+# Schema: https://storage.googleapis.com/coderabbit_public_assets/schema.v2.json
+language: en-US
+
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+    labels:
+      - "!wip"
+
+  # Never spend review budget on vendored code or build output.
+  path_filters:
+    - "!lib/**"
+    - "!out/**"
+    - "!cache/**"
+    - "!graphify-out/**"
+    - "!broadcast/**"
+
+  path_instructions:
+    - path: "src/**/*.sol"
+      instructions: >-
+        ERC-4337 v0.8 / ERC-7579 modular smart account built from first
+        principles. Enforce checks-effects-interactions, no unbounded loops over
+        caller-controlled arrays, ERC-7201 namespaced storage (no bare state in
+        the Core), and the rule that the mandatory root validator can never be
+        uninstalled. All authorization and spend/target policy must live in
+        modules, not in the Core. Flag any deviation from a frozen decision in
+        docs/decisions/ and any use of a deprecated ERC-4337 v0.6/v0.7 interface.
+    - path: "test/**/*.sol"
+      instructions: >-
+        Strict TDD project: tests precede implementation. Check for meaningful
+        assertions (not just non-revert), fuzz/invariant coverage on arithmetic
+        and access control, and realistic EntryPoint 0.8 UserOperation flows
+        rather than direct internal calls.
+    - path: "script/**/*.sol"
+      instructions: >-
+        Deployment scripts: verify CREATE2 salt derivation, that no private key
+        or RPC URL is hardcoded, and that broadcast addresses are checked.
+
+chat:
+  auto_reply: true
