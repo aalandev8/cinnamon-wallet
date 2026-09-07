@@ -1,0 +1,50 @@
+name: Feature / module request
+description: Propose new behavior, a module, or an improvement
+labels: ["type: feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Remember the project scope: a minimal Core, with all policy in modules.
+        If this changes a frozen architecture decision, use the
+        **ADR proposal** template instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What are you trying to do, and why can't you today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What should exist? Core change, new validator, new hook, tooling?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Core (execution / registry / routing / storage)
+        - Validator module
+        - Hook module
+        - Factory
+        - ERC-4337 harness / bundler
+        - Tooling / CI / docs
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: input
+    id: standards
+    attributes:
+      label: Relevant standards
+      description: e.g. ERC-7579, ERC-1271, ERC-7484
+    validations:
+      required: false

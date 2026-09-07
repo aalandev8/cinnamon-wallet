@@ -1,0 +1,14 @@
+# Code owners for cinnamon-wallet.
+# These users are requested for review automatically. Review is not required to
+# merge (see the main ruleset), but architecture-sensitive paths should not be
+# merged without the owner's input.
+
+*                       @aalandev8
+
+# Architecture: never change without an ADR.
+/docs/architecture.md   @aalandev8
+/docs/decisions/        @aalandev8
+
+# CI / repo config.
+/.github/               @aalandev8
+/foundry.toml           @aalandev8

@@ -1,0 +1,46 @@
+name: ADR proposal
+description: Propose a new architecture decision or reopen a frozen one
+labels: ["type: adr", "needs: decision"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Architecture decisions are explicit and live in `docs/decisions/`.
+        Use this to propose a new ADR or to reopen an existing one before any
+        code that depends on it is written.
+  - type: input
+    id: adr
+    attributes:
+      label: ADR affected
+      description: New, or the number of the ADR you want to reopen/supersede.
+      placeholder: "new / ADR-0004"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What forces this decision now? What constraints apply?
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options with tradeoffs
+      description: List each option and its consequences. One will be chosen.
+    validations:
+      required: true
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommendation
+      description: Which option do you lean toward, and why?
+    validations:
+      required: false
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Which parts of the Core / modules / docs change if accepted?
+    validations:
+      required: true
