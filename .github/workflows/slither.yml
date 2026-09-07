@@ -36,8 +36,19 @@ jobs:
           persist-credentials: false
           submodules: recursive
 
+      - name: Check for Solidity sources
+        id: sources
+        run: |
+          if find src -name '*.sol' -print -quit | grep -q .; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Solidity sources under src/ yet — skipping Slither."
+          fi
+
       - name: Run Slither
+        if: steps.sources.outputs.present == 'true'
         uses: crytic/slither-action@b52cc1cbfee9ca3e8722dd5224299d16c9a6b80f # v0.4.2
         with:
-          fail-on: none # tighten to `high` (or `medium`) once the first contracts land
+          fail-on: none # tighten to `high` (or `medium`) once the contracts mature
           slither-args: --checklist
