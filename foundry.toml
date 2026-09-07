@@ -45,4 +45,16 @@ number_underscore = "thousands"
 multiline_func_header = "attributes_first"
 sort_imports = true
 
+# Named RPC endpoints — used as `forge script --rpc-url sepolia`.
+# Values are read from the environment (see .env.example).
+[rpc_endpoints]
+mainnet = "${MAINNET_RPC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
+base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+
+# Explorer API keys for `forge verify-contract`.
+[etherscan]
+sepolia = {key = "${ETHERSCAN_API_KEY}"}
+base_sepolia = {key = "${BASESCAN_API_KEY}", url = "https://api-sepolia.basescan.org/api"}
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

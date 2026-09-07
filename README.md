@@ -1,5 +1,9 @@
 # cinnamon-wallet
 
+[![CI](https://github.com/aalandev8/cinnamon-wallet/actions/workflows/ci.yml/badge.svg)](https://github.com/aalandev8/cinnamon-wallet/actions/workflows/ci.yml)
+[![Solidity](https://img.shields.io/badge/solidity-0.8.28-363636?logo=solidity)](foundry.toml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
+
 A modular, configurable **Smart Contract Wallet** built to learn Account Abstraction,
 protocol architecture, and Solidity in depth.
 
@@ -88,11 +92,18 @@ Full rationale and the open sub-decisions are in [`docs/architecture.md`](docs/a
 ## Development
 
 ```shell
+git submodule update --init --recursive   # first checkout
+cp .env.example .env                       # then fill in RPC URLs / keys
+
 forge build          # compile
 forge test -vvv      # run tests
 forge fmt            # format (CI runs --check)
 forge coverage       # coverage report
 ```
+
+Common tasks are wrapped in a [`justfile`](justfile) (`just` — see
+<https://github.com/casey/just>): `just check` runs the full pre-commit gate,
+`just slither` runs static analysis, `just snapshot` updates gas.
 
 Work follows strict TDD and the rules in [`CLAUDE.md`](CLAUDE.md).
 

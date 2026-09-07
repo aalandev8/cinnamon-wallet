@@ -33,6 +33,11 @@ forge test -vvv
 
 All Solidity targets `0.8.28` / `evm_version = cancun`.
 
+For scripts and verification, copy `.env.example` to `.env` (git-ignored) and set
+`MAINNET_RPC_URL`, `SEPOLIA_RPC_URL`, `BASE_SEPOLIA_RPC_URL`, `ETHERSCAN_API_KEY`,
+`BASESCAN_API_KEY`. Prefer a Foundry keystore (`cast wallet import`) over a raw
+private key. Nothing in `.env` is needed to build or test.
+
 ## Workflow
 
 1. Open (or claim) an issue describing the change. For architecture-affecting
@@ -41,21 +46,21 @@ All Solidity targets `0.8.28` / `evm_version = cancun`.
    - Branch naming: `type/short-description`, e.g. `feat/ecdsa-validator`,
      `fix/nonce-key-routing`, `docs/hook-loop`, `chore/ci-slither`.
 3. Write the failing test, make it pass, refactor.
-4. Before pushing, make sure all three pass locally:
+4. Before pushing, run the full gate locally:
    ```shell
-   forge fmt --check
-   forge build
-   forge test
+   just check      # forge fmt --check + build + test
    ```
-5. Open a PR against `main`. Fill in the PR template. CI
-   (`forge fmt --check` / `forge build` / `forge test`) must be green and the
-   branch up to date with `main` before merge.
+5. Open a PR against `main`. Fill in the PR template. The **PR title** must
+   follow Conventional Commits — it becomes the squash commit on `main` and is
+   linted in CI. CI (`forge fmt --check` / `forge build` / `forge test`) must be
+   green and the branch up to date with `main` before merge.
 6. Keep history linear: merge is by **squash** or **rebase**, no merge commits.
 
 ## Commit messages
 
 [Conventional Commits](https://www.conventionalcommits.org/). Types in use:
-`feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `ci`, `build`, `perf`.
+`feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`,
+`revert`. The PR title is checked against this list by the *PR title* workflow.
 
 ```
 feat(validator): add ECDSA root validator

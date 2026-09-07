@@ -1,0 +1,43 @@
+name: Slither
+
+permissions: {}
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "test/**"
+      - "script/**"
+      - "**/*.sol"
+      - "foundry.toml"
+      - "remappings.txt"
+      - ".github/workflows/slither.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "**/*.sol"
+  workflow_dispatch:
+
+concurrency:
+  group: slither-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Static analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # let the action post the findings summary
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          submodules: recursive
+
+      - name: Run Slither
+        uses: crytic/slither-action@b52cc1cbfee9ca3e8722dd5224299d16c9a6b80f # v0.4.2
+        with:
+          fail-on: none # tighten to `high` (or `medium`) once the first contracts land
+          slither-args: --checklist
