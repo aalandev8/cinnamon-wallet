@@ -1,0 +1,23 @@
+version: 2
+updates:
+  # GitHub Actions used by workflows in .github/workflows.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "type: chore"
+      - "area: ci"
+
+  # Git submodules under lib/ (forge-std, and later OZ / account-abstraction).
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "build"
+    labels:
+      - "type: chore"
+      - "area: tooling"
