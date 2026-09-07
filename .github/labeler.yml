@@ -1,6 +1,3 @@
-# Path-based auto-labeling for PRs. See .github/workflows/labeler.yml
-# Syntax: actions/labeler v5+.
-
 "area: ci":
   - changed-files:
       - any-glob-to-any-file:
