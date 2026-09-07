@@ -1,5 +1,4 @@
-# CodeRabbit configuration — https://docs.coderabbit.ai/reference/yaml-template
-# Schema: https://storage.googleapis.com/coderabbit_public_assets/schema.v2.json
+# yaml-language-server: $schema=https://storage.googleapis.com/coderabbit_public_assets/schema.v2.json
 language: en-US
 
 reviews:
@@ -17,7 +16,6 @@ reviews:
     labels:
       - "!wip"
 
-  # Never spend review budget on vendored code or build output.
   path_filters:
     - "!lib/**"
     - "!out/**"
