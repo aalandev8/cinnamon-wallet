@@ -33,10 +33,10 @@ forge test -vvv
 
 All Solidity targets `0.8.28` / `evm_version = cancun`.
 
-For scripts and verification, copy `.env.example` to `.env` (git-ignored) and set
-`MAINNET_RPC_URL`, `SEPOLIA_RPC_URL`, `BASE_SEPOLIA_RPC_URL`, `ETHERSCAN_API_KEY`,
-`BASESCAN_API_KEY`. Prefer a Foundry keystore (`cast wallet import`) over a raw
-private key. Nothing in `.env` is needed to build or test.
+For scripts and contract verification, create a `.env` (git-ignored) with
+`MAINNET_RPC_URL`, `SEPOLIA_RPC_URL`, `BASE_SEPOLIA_RPC_URL`, `ETHERSCAN_API_KEY`
+and `BASESCAN_API_KEY`. Prefer a Foundry keystore (`cast wallet import`) over a
+raw private key. Nothing in `.env` is needed to build or test.
 
 ## Workflow
 
