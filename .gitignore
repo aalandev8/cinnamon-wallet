@@ -3,6 +3,9 @@ cache/
 out/
 .foundry/
 
+# Exploration / scratch tests — playground code, not part of the suite
+test/scratch/
+
 # Broadcast logs (keep dry-run and local-chain noise out)
 !/broadcast
 /broadcast/*/31337/
