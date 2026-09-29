@@ -89,7 +89,43 @@ contract ECDSAValidatorTest is Test {
         assertEq(validator.validateUserOp(userOp, USER_OP_HASH), VALIDATION_FAILED);
     }
 
+    function test_validateUserOp_failsWithInvalidV(uint8 v) public {
+        vm.assume(v != 27 && v != 28);
+        _install();
+        (, bytes32 r, bytes32 s) = vm.sign(ownerKey, USER_OP_HASH);
+        PackedUserOperation memory userOp;
+        userOp.signature = abi.encodePacked(r, s, v);
+
+        vm.prank(account);
+        assertEq(validator.validateUserOp(userOp, USER_OP_HASH), VALIDATION_FAILED);
+    }
+
+    function test_validateUserOp_failsWithHighS() public {
+        _install();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(ownerKey, USER_OP_HASH);
+        PackedUserOperation memory userOp;
+        userOp.signature = abi.encodePacked(r, bytes32(SECP256K1_ORDER - uint256(s)), v == 27 ? uint8(28) : uint8(27));
+
+        vm.prank(account);
+        assertEq(validator.validateUserOp(userOp, USER_OP_HASH), VALIDATION_FAILED);
+    }
+
     function test_validateUserOp_isolatesOwnersPerAccount() public {
+        (address otherOwner, uint256 otherOwnerKey) = makeAddrAndKey("otherOwner");
+        address otherAccount = makeAddr("otherAccount");
+        _install();
+        vm.prank(otherAccount);
+        validator.onInstall(abi.encode(otherOwner));
+
+        vm.startPrank(account);
+        assertEq(validator.validateUserOp(_userOpSignedBy(ownerKey), USER_OP_HASH), VALIDATION_SUCCESS);
+        assertEq(validator.validateUserOp(_userOpSignedBy(otherOwnerKey), USER_OP_HASH), VALIDATION_FAILED);
+        vm.startPrank(otherAccount);
+        assertEq(validator.validateUserOp(_userOpSignedBy(otherOwnerKey), USER_OP_HASH), VALIDATION_SUCCESS);
+        assertEq(validator.validateUserOp(_userOpSignedBy(ownerKey), USER_OP_HASH), VALIDATION_FAILED);
+    }
+
+    function test_validateUserOp_failsForUninstalledAccount() public {
         _install();
 
         vm.prank(makeAddr("otherAccount"));
