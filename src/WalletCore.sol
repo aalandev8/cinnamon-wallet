@@ -29,6 +29,8 @@ contract WalletCore is IAccount, IERC7579ModuleConfig, Initializable {
 
     address public immutable entryPoint;
 
+    event RootValidatorChanged(address indexed previousRoot, address indexed newRoot);
+
     error NotEntryPoint();
     error InvalidRootValidator(address validator);
     error NotEntryPointOrSelf();
@@ -68,9 +70,7 @@ contract WalletCore is IAccount, IERC7579ModuleConfig, Initializable {
 
     /// @notice Sets the root validator and installs it with `rootInitData`.
     function initialize(address rootValidator_, bytes calldata rootInitData) external initializer {
-        if (rootValidator_.code.length == 0 || !IERC7579Module(rootValidator_).isModuleType(MODULE_TYPE_VALIDATOR)) {
-            revert InvalidRootValidator(rootValidator_);
-        }
+        _requireValidRoot(rootValidator_);
         _getWalletStorage().rootValidator = rootValidator_;
         IERC7579Module(rootValidator_).onInstall(rootInitData);
     }
@@ -114,6 +114,24 @@ contract WalletCore is IAccount, IERC7579ModuleConfig, Initializable {
         (CallType callType, ExecType execType,,) = ERC7579Utils.decodeMode(Mode.wrap(mode));
         return execType == ERC7579Utils.EXECTYPE_DEFAULT
             && (callType == ERC7579Utils.CALLTYPE_SINGLE || callType == ERC7579Utils.CALLTYPE_BATCH);
+    }
+
+    /// @notice Atomically replaces the root validator; an already installed validator is promoted as is.
+    function changeRootValidator(address newRoot, bytes calldata initData) external onlyEntryPointOrSelf {
+        WalletStorage storage $ = _getWalletStorage();
+        address previousRoot = $.rootValidator;
+        if (newRoot == previousRoot) revert InvalidRootValidator(newRoot);
+        _requireValidRoot(newRoot);
+
+        $.rootValidator = newRoot;
+        if ($.validators[newRoot]) {
+            delete $.validators[newRoot];
+        } else {
+            IERC7579Module(newRoot).onInstall(initData);
+        }
+        IERC7579Module(previousRoot).onUninstall("");
+
+        emit RootValidatorChanged(previousRoot, newRoot);
     }
 
     function installModule(uint256 moduleTypeId, address module, bytes calldata initData)
@@ -182,6 +200,12 @@ contract WalletCore is IAccount, IERC7579ModuleConfig, Initializable {
             return ERC7579Utils.execSingle(executionCalldata, ERC7579Utils.EXECTYPE_DEFAULT);
         }
         return ERC7579Utils.execBatch(executionCalldata, ERC7579Utils.EXECTYPE_DEFAULT);
+    }
+
+    function _requireValidRoot(address validator) private view {
+        if (validator.code.length == 0 || !IERC7579Module(validator).isModuleType(MODULE_TYPE_VALIDATOR)) {
+            revert InvalidRootValidator(validator);
+        }
     }
 
     function _isModuleInstalled(uint256 moduleTypeId, address module) private view returns (bool) {

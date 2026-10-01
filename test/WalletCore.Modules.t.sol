@@ -166,4 +166,62 @@ contract WalletCoreModulesTest is Test {
     function test_accountId() public view {
         assertEq(wallet.accountId(), "cinnamon.wallet.0.1.0");
     }
+
+    function test_changeRootValidator_swapsRootAtomically() public {
+        MockValidator newRoot = new MockValidator();
+        rootValidator.onInstall("");
+
+        vm.expectEmit(address(wallet));
+        emit WalletCore.RootValidatorChanged(address(rootValidator), address(newRoot));
+        vm.prank(entryPoint);
+        wallet.changeRootValidator(address(newRoot), "init");
+
+        assertEq(wallet.rootValidator(), address(newRoot));
+        assertEq(newRoot.installData(address(wallet)), "init");
+        assertTrue(wallet.isModuleInstalled(MODULE_TYPE_VALIDATOR, address(newRoot), ""));
+        assertFalse(wallet.isModuleInstalled(MODULE_TYPE_VALIDATOR, address(rootValidator), ""));
+    }
+
+    function test_changeRootValidator_routesKeyZeroToNewRoot() public {
+        MockValidator newRoot = new MockValidator();
+        newRoot.setValidationResult(9);
+        vm.prank(entryPoint);
+        wallet.changeRootValidator(address(newRoot), "");
+
+        PackedUserOperation memory op;
+        vm.prank(entryPoint);
+        assertEq(wallet.validateUserOp(op, bytes32(0), 0), 9);
+    }
+
+    function test_changeRootValidator_promotesInstalledValidator() public {
+        MockValidator validator = new MockValidator();
+        vm.startPrank(entryPoint);
+        wallet.installModule(MODULE_TYPE_VALIDATOR, address(validator), "");
+
+        wallet.changeRootValidator(address(validator), "");
+
+        assertEq(wallet.rootValidator(), address(validator));
+        vm.expectRevert(WalletCore.CannotUninstallRootValidator.selector);
+        wallet.uninstallModule(MODULE_TYPE_VALIDATOR, address(validator), "");
+    }
+
+    function test_changeRootValidator_revertsForInvalidValidator() public {
+        address notValidator = address(new MockModule(MODULE_TYPE_EXECUTOR));
+
+        vm.startPrank(entryPoint);
+        vm.expectRevert(abi.encodeWithSelector(WalletCore.InvalidRootValidator.selector, notValidator));
+        wallet.changeRootValidator(notValidator, "");
+
+        vm.expectRevert(abi.encodeWithSelector(WalletCore.InvalidRootValidator.selector, address(rootValidator)));
+        wallet.changeRootValidator(address(rootValidator), "");
+    }
+
+    function test_changeRootValidator_revertsForOtherCallers(address caller) public {
+        vm.assume(caller != entryPoint && caller != address(wallet));
+        MockValidator newRoot = new MockValidator();
+
+        vm.prank(caller);
+        vm.expectRevert(WalletCore.NotEntryPointOrSelf.selector);
+        wallet.changeRootValidator(address(newRoot), "");
+    }
 }
