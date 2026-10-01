@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: true
+  msgpackr-extract: false
+  protobufjs: false
+minimumReleaseAgeExclude:
+  - viem@2.57.2
