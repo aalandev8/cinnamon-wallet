@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
+import {Module} from "./types/Module.sol";
 import {CallType, ERC7579Utils, ExecType, Mode} from "@openzeppelin/contracts/account/utils/draft-ERC7579Utils.sol";
 import {IAccount, PackedUserOperation} from "@openzeppelin/contracts/interfaces/IERC4337.sol";
 import {
@@ -68,11 +69,18 @@ contract WalletCore is IAccount, IERC7579ModuleConfig, Initializable {
         _disableInitializers();
     }
 
-    /// @notice Sets the root validator and installs it with `rootInitData`.
-    function initialize(address rootValidator_, bytes calldata rootInitData) external initializer {
+    /// @notice Sets and installs the root validator, then installs `extraModules` in order.
+    function initialize(address rootValidator_, bytes calldata rootInitData, Module[] calldata extraModules)
+        external
+        initializer
+    {
         _requireValidRoot(rootValidator_);
         _getWalletStorage().rootValidator = rootValidator_;
         IERC7579Module(rootValidator_).onInstall(rootInitData);
+
+        for (uint256 i; i < extraModules.length; ++i) {
+            _installModule(extraModules[i].moduleType, extraModules[i].moduleAddress, extraModules[i].initData);
+        }
     }
 
     receive() external payable {}
@@ -138,22 +146,7 @@ contract WalletCore is IAccount, IERC7579ModuleConfig, Initializable {
         external
         onlyEntryPointOrSelf
     {
-        if (!supportsModule(moduleTypeId)) revert UnsupportedModuleType(moduleTypeId);
-        if (!IERC7579Module(module).isModuleType(moduleTypeId)) revert ModuleTypeMismatch(moduleTypeId, module);
-        if (_isModuleInstalled(moduleTypeId, module)) revert ModuleAlreadyInstalled(moduleTypeId, module);
-
-        WalletStorage storage $ = _getWalletStorage();
-        if (moduleTypeId == MODULE_TYPE_VALIDATOR) {
-            $.validators[module] = true;
-        } else if (moduleTypeId == MODULE_TYPE_EXECUTOR) {
-            $.executors[module] = true;
-        } else {
-            if ($.hook != address(0)) revert HookAlreadyInstalled();
-            $.hook = module;
-        }
-
-        IERC7579Module(module).onInstall(initData);
-        emit ModuleInstalled(moduleTypeId, module);
+        _installModule(moduleTypeId, module, initData);
     }
 
     function uninstallModule(uint256 moduleTypeId, address module, bytes calldata deInitData)
@@ -200,6 +193,25 @@ contract WalletCore is IAccount, IERC7579ModuleConfig, Initializable {
             return ERC7579Utils.execSingle(executionCalldata, ERC7579Utils.EXECTYPE_DEFAULT);
         }
         return ERC7579Utils.execBatch(executionCalldata, ERC7579Utils.EXECTYPE_DEFAULT);
+    }
+
+    function _installModule(uint256 moduleTypeId, address module, bytes calldata initData) private {
+        if (!supportsModule(moduleTypeId)) revert UnsupportedModuleType(moduleTypeId);
+        if (!IERC7579Module(module).isModuleType(moduleTypeId)) revert ModuleTypeMismatch(moduleTypeId, module);
+        if (_isModuleInstalled(moduleTypeId, module)) revert ModuleAlreadyInstalled(moduleTypeId, module);
+
+        WalletStorage storage $ = _getWalletStorage();
+        if (moduleTypeId == MODULE_TYPE_VALIDATOR) {
+            $.validators[module] = true;
+        } else if (moduleTypeId == MODULE_TYPE_EXECUTOR) {
+            $.executors[module] = true;
+        } else {
+            if ($.hook != address(0)) revert HookAlreadyInstalled();
+            $.hook = module;
+        }
+
+        IERC7579Module(module).onInstall(initData);
+        emit ModuleInstalled(moduleTypeId, module);
     }
 
     function _requireValidRoot(address validator) private view {

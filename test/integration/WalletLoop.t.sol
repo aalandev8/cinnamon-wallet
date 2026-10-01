@@ -3,6 +3,7 @@ pragma solidity 0.8.28;
 
 import {WalletCore} from "../../src/WalletCore.sol";
 import {ECDSAValidator} from "../../src/modules/ECDSAValidator.sol";
+import {Module} from "../../src/types/Module.sol";
 import {MockHook} from "../mocks/MockHook.sol";
 import {EntryPoint} from "@account-abstraction/contracts/core/EntryPoint.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
@@ -32,7 +33,7 @@ contract WalletLoopTest is Test {
         (owner, ownerKey) = makeAddrAndKey("owner");
         WalletCore implementation = new WalletCore(address(entryPoint));
         wallet = WalletCore(payable(Clones.clone(address(implementation))));
-        wallet.initialize(address(validator), abi.encode(owner));
+        wallet.initialize(address(validator), abi.encode(owner), new Module[](0));
         vm.deal(address(wallet), 10 ether);
         beneficiary = payable(makeAddr("beneficiary"));
         recipient = makeAddr("recipient");

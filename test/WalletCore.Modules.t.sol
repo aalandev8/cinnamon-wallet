@@ -2,6 +2,7 @@
 pragma solidity 0.8.28;
 
 import {WalletCore} from "../src/WalletCore.sol";
+import {Module} from "../src/types/Module.sol";
 import {MockModule} from "./mocks/MockModule.sol";
 import {MockValidator} from "./mocks/MockValidator.sol";
 import {PackedUserOperation} from "@openzeppelin/contracts/interfaces/IERC4337.sol";
@@ -26,7 +27,7 @@ contract WalletCoreModulesTest is Test {
         WalletCore implementation = new WalletCore(entryPoint);
         wallet = WalletCore(payable(Clones.clone(address(implementation))));
         rootValidator = new MockValidator();
-        wallet.initialize(address(rootValidator), "");
+        wallet.initialize(address(rootValidator), "", new Module[](0));
     }
 
     function test_installModule_installsEachSupportedType() public {

@@ -2,6 +2,7 @@
 pragma solidity 0.8.28;
 
 import {WalletCore} from "../src/WalletCore.sol";
+import {Module} from "../src/types/Module.sol";
 import {MockHook} from "./mocks/MockHook.sol";
 import {MockModule} from "./mocks/MockModule.sol";
 import {MockValidator} from "./mocks/MockValidator.sol";
@@ -27,7 +28,7 @@ contract WalletCoreHookTest is Test {
         recipient = makeAddr("recipient");
         WalletCore implementation = new WalletCore(entryPoint);
         wallet = WalletCore(payable(Clones.clone(address(implementation))));
-        wallet.initialize(address(new MockValidator()), "");
+        wallet.initialize(address(new MockValidator()), "", new Module[](0));
         vm.deal(address(wallet), 10 ether);
         singleMode = Mode.unwrap(
             ERC7579Utils.encodeMode(
