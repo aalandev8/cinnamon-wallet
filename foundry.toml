@@ -21,6 +21,9 @@ cbor_metadata = false
 # ERC-7201 namespaced storage and clone storage collisions.
 extra_output = ["storageLayout"]
 
+# Deploy script writes deployed addresses for the e2e suite.
+fs_permissions = [{access = "read-write", path = "./e2e/deployments"}]
+
 [profile.default.fuzz]
 runs = 256
 
